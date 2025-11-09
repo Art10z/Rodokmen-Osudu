@@ -12,6 +12,7 @@ let prebiehaPrechod = false;
 
 // --- NOVÝ SYSTÉM PRE SPRAVU MÉDIÍ ---
 let mediaCache = new Map(); // Ukladá načítané médiá ako Blob URL pre okamžitý prístup
+let prebiehajucePreklady = new Map(); // Sleduje prebiehajúce sťahovania, aby sa nespúšťali duplicitne
 const MAX_CACHE_SIZE = 50; // Maximálny počet médií v cache (prevencia memory leak)
 
 /**
