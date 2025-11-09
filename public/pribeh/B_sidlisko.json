@@ -1,0 +1,34 @@
+{
+  "B00_tajomna_postava": {
+    "typ": "manual", "lokacia": "Sídlisko", "posun_casu": 5, 
+    "media": { "animacia_slucka": "/pribeh/B_SCENy_SLUCky_VOLby/B00_SLUC_tajomna_postava (zatial chýba).mp4" },
+    "pribeh": { "text": "Čas akoby sa zastavil. Vzduch je ťažký a nehybný. | Predo mnou stojí postava... | Mám len dve možnosti.", 
+    "dlzka_sceny": 8 },
+      "moznosti": [
+        {
+        "text": "Vyhnúť sa tajomnej postave (Príbeh nepokračuje)", "dalsia_scena": "B01_pri_panelaku", "posun_casu": 2,
+        "efekty": { "statistiky": { "motivacia": 5, "dopamin": -2 } },
+        "reakcia": { "text": "Opatrne cúvam do tieňov. | Nechcem na seba pútať pozornosť, kým nezistím, čo sa deje.", "dlzka_sceny": 8, "media": { "animacia": "/pribeh/B_SCENy_SLUCky_VOLby/B01_VOL1A_vyhnut_postave (zatial chýba).mp4" } }
+        },
+        {
+        "text": "Osloviť tajomnú postavu (Príbeh nepokračuje)", "dalsia_scena": "B01_pri_panelaku", "posun_casu": 1,
+        "efekty": { "statistiky": { "energia": -2, "motivacia": -5 } },
+        "reakcia": { "text": "Zhlboka sa nadýchnem a zakričím: 'Hej, ty!' | Musím vedieť, kto to je.", "dlzka_sceny": 7, "media": { "animacia": "/pribeh/B_SCENy_SLUCky_VOLby/B01_VOL2A_kricim (zatial chýba).mp4" } }
+        }
+      ]
+  },
+  "B01_pri_panelaku": {
+    "typ": "auto", "dalsia_scena": "KONIEC_DEMO",
+    "pribeh": { "text": "Bez ohľadu na moje rozhodnutie... zdá sa, že som dospel na koniec cesty.", "dlzka_sceny": 5 }
+    },
+  "KONIEC_DEMO": {
+    "typ": "manual", "lokacia": "Koniec dema", "posun_casu": 1,
+    "media": { "hlavne_pozadie": "/pribeh/obrazky/02_pic.jpg" },
+    "pribeh": { "text": "Príbeh na tomto mieste zatiaľ končí. | Hra je stále vo vývoji. Ďakujem za pochopenie a vyskúšanie.", 
+    "dlzka_sceny": 8 },
+      "moznosti": [
+        {   
+        "text": "Vrátiť sa a zvážiť možnosti", "dalsia_scena": "uvod_prebudenie" }
+      ]
+    }
+}

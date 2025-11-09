@@ -1,0 +1,160 @@
+/* Súbor: /src/styles/okno-pribeh.css */
+
+.story-panel { position: relative; overflow: hidden; background-color: #000; display: flex; justify-content: center; align-items: center; padding: 0; }
+#transition-overlay {
+    position: absolute;
+    top: 40px;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    background-color: #000;
+    opacity: 0;
+    z-index: 50;
+    pointer-events: none;
+    transition: opacity 1.2s ease-in-out;
+}
+#transition-overlay.visible { opacity: 1; }
+
+.story-panel-background {
+    position: absolute;
+    top: 40px;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+}
+.story-background-media { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease-in-out; }
+#intro-background-image { opacity: 1; }
+.story-panel-handle-wrapper { position: absolute; left: 0; right: 0; z-index: 3; height: 40px; background: rgba(12, 10, 8, 0.75); backdrop-filter: blur(12px); }
+/* --- ZMENA: Farba deliacich čiar zmenená na zlatú --- */
+#top-panel-handle-wrapper { top: 0; border-bottom: 1px solid var(--color-accent); }
+#bottom-panel-handle-wrapper { bottom: 0; border-top: 1px solid var(--color-accent); }
+.story-overlay-content { position: absolute; left: 0; right: 0; z-index: 2; background: rgba(17, 15, 13, 0.75); backdrop-filter: blur(5px); overflow: hidden; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+/* --- ZMENA: Farba deliacich čiar zmenená na zlatú --- */
+#top-story-content { top: 40px; transform: translateY(-100%); border-bottom: 1px solid var(--color-accent); }
+#bottom-story-content { bottom: 40px; transform: translateY(100%); border-top: 1px solid var(--color-accent); }
+.story-panel.top-panel-open #top-story-content, .story-panel.bottom-panel-open #bottom-story-content { transform: translateY(0); }
+.story-panel-handle { height: 100%; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; background: none; border: none; }
+.handle-bar { width: 12px; height: 12px; border-color: var(--color-text-muted); border-style: solid; border-width: 0 2.5px 2.5px 0; transition: transform 0.3s ease-in-out; }
+#bottom-panel-handle .handle-bar { transform: rotate(45deg); }
+.story-panel.bottom-panel-open #bottom-panel-handle .handle-bar { transform: rotate(-135deg); }
+#top-panel-handle .handle-bar { transform: rotate(-135deg); }
+.story-panel.top-panel-open #top-panel-handle .handle-bar { transform: rotate(45deg); }
+
+.story-panel-handle:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.story-scroll-wrapper { padding: 20px 40px; overflow-y: auto; max-height: 35vh; scrollbar-width: thin; scrollbar-color: var(--color-accent) rgba(0,0,0,0.3); }
+.story-text { line-height: 1.6; text-align: justify; font-size: 1.05em; min-height: 1.6em; }
+.choices-container { display: grid; gap: 12px; }
+.choices-container.choices-count-1 { grid-template-columns: 1fr; }
+.choices-container.choices-count-2, .choices-container.choices-count-4 { grid-template-columns: 1fr 1fr; }
+.choices-container.choices-count-3, .choices-container.choices-count-5 { grid-template-columns: 1fr 1fr; }
+.choices-container.choices-count-3 button:first-child, .choices-container.choices-count-5 button:first-child { grid-column: 1 / -1; }
+.choices-container.choices-count-6 { grid-template-columns: 1fr 1fr 1fr; }
+.choices-container button { font-family: var(--font-main); font-size: 0.9em; font-weight: 600; cursor: pointer; border-radius: 4px; padding: 10px 14px; text-align: center; color: var(--color-text); background: rgba(0,0,0,0.3); border: 1px solid #1f1b17; text-shadow: none; box-shadow: 0 2px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05); transition: all 0.2s ease; }
+.choices-container button:hover:not(:disabled) { background: var(--color-panel-bg); border-color: var(--color-accent); color: var(--color-accent-bright); }
+.choices-container button:disabled { background: rgba(0,0,0,0.2); color: var(--color-text-muted); cursor: not-allowed; opacity: 0.5; }
+#intro-overlay { position: absolute; inset: 0; background-color: transparent; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; visibility: visible; opacity: 1; padding: 20px; transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out; }
+#loading-state { display: flex; }
+.intro-state { position: absolute; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 20px; transition: opacity 0.5s ease-in-out; }
+.intro-text { font-size: 1.2em; color: var(--color-text-muted); text-align: center; }
+.intro-button { font-family: var(--font-main); font-size: 1.2em; font-weight: 600; padding: 10px 25px; background-color: var(--color-panel-bg); color: var(--color-text); border: 1px solid var(--color-divider); cursor: pointer; border-radius: 4px; margin-top: 10px; }
+.intro-button:hover { background-color: var(--color-accent); border-color: var(--color-accent-bright); color: #fff; }
+.name-input { font-family: var(--font-main); font-size: 1.1em; padding: 10px; width: 300px; background-color: var(--color-bg); border: 1px solid var(--color-divider); color: var(--color-text); text-align: center; border-radius: 4px; margin: 15px 0; }
+.name-input:focus { outline: none; border-color: var(--color-accent); }
+.modal-overlay { position: fixed; inset: 0; background-color: rgba(17, 15, 13, 0.85); backdrop-filter: blur(8px); z-index: 1000; display: flex; justify-content: center; align-items: center; transition: opacity 0.3s, visibility 0.3s; }
+.modal-content { background-color: var(--color-panel-bg); background-image: var(--texture-noise); padding: 30px 40px; border-radius: 8px; border: 1px solid var(--color-divider); box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; max-width: 400px; }
+.modal-content p { font-size: 1.1em; line-height: 1.6; margin: 0 0 25px 0; }
+.modal-buttons { display: flex; gap: 15px; justify-content: center; }
+.modal-button { font-family: var(--font-main); font-size: 1em; font-weight: 600; padding: 10px 20px; border-radius: 4px; border: 1px solid var(--color-divider); cursor: pointer; }
+.modal-button.confirm { background-color: var(--color-negative); color: #fff; }
+.modal-button.confirm:hover { background-color: #c84e3c; }
+.modal-button.cancel { background-color: var(--color-panel-bg); color: var(--color-text); }
+.modal-button.cancel:hover { background-color: var(--color-accent); color: #fff; }
+
+/* --- INVENTORY PANEL STYLES --- */
+.inventory-panel {
+    background-color: var(--color-panel-bg);
+    /* --- ZMENA: Farba deliacej čiary zmenená na zlatú --- */
+    border-left: 1px solid var(--color-accent);
+    padding: 15px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.5);
+    opacity: 0;
+    transition: opacity 0.8s ease-out;
+}
+
+.inventory-panel.active {
+    opacity: 1;
+}
+
+.inventory-panel.inactive {
+    pointer-events: none;
+}
+
+.panel-header {
+    width: 100%;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    /* --- ZMENA: Farba deliacej čiary zmenená na zlatú --- */
+    border-bottom: 1px solid var(--color-accent);
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-family: var(--font-title);
+    color: var(--color-text-muted);
+    font-size: 0.8em;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#inventory-items-container {
+    width: 100%;
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding-top: 5px;
+}
+
+.inventory-item {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--color-divider);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-title);
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--color-accent-bright);
+    cursor: help;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.inventory-item:hover {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border-color: var(--color-accent-bright);
+}
+
+.empty-inventory {
+    font-size: 0.8em;
+    color: var(--color-text-muted);
+    font-style: italic;
+    text-align: center;
+    padding: 10px 5px;
+}

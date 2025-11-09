@@ -1,0 +1,103 @@
+{
+  "NAME_ENTRY": {
+    "typ": "zadanieMena", "dlzka_sceny": 3,
+    "media": { "hlavne_pozadie": "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" }
+  },
+  "PROLOGUE_ANIMATION": {
+    "typ": "auto", "dalsia_scena": "uvod_prebudenie", 
+    "posun_casu": 3, "dlzka_sceny": 9,
+    "media": { "animacia": "/pribeh/A_SCENy_SLUCky_VOLby/01_SCEN_intro_nadpis.mp4" }
+  },
+  "uvod_prebudenie": {
+    "typ": "auto", "dalsia_scena": "A01_prve_vetvenie", 
+    "lokacia": "Neznáma miestnosť", "posun_casu": 5, "dlzka_sceny": 17,
+    "efekty": { "statistiky": { "zdravie": -5 } },
+    "media": { "animacia": "/pribeh/A_SCENy_SLUCky_VOLby/02_SCEN_uvod_prebudenie.mp4" },
+    "pribeh": { "text": "...|...| Kto som, kde som? ... Musím sa zorientovať" }
+  },
+  "A01_prve_vetvenie": {
+    "typ": "manual",
+    "media": { "animacia_slucka": "/pribeh/A_SCENy_SLUCky_VOLby/A01_SLUC_prve_vetvenie.mp4" },
+    "pribeh": { "text": " ... | Čo teraz? | Čo mám robiť?...",
+    "dlzka_sceny": 13 },
+      "moznosti": [ 
+        {
+        "text": "Prehľadám ten stolík", "dalsia_scena": "A02_najdeny_kompas", "posun_casu": 1,
+        "efekty": { "statistiky": { "motivacia": 5, "energia": -1 } }, "nesmieMat": { "inventar": "zlaty_kompas" },
+        "reakcia": { "text": "... Možno tam niečo bude | hmm ... To je krabica? | ...",
+        "dlzka_sceny": 14, "media": { "animacia": "/pribeh/A_SCENy_SLUCky_VOLby/A01_VOL_A02_krabica_stol.mp4" } } 
+        },
+        { 
+        "text": "Nazriem cez tie otvorené dvere", "dalsia_scena": "A03_pohlad_von", "posun_casu": 1,
+        "efekty": { "statistiky": { "dopamin": -5, "motivacia": 3 } },
+        "reakcia": { "text": "Musím vedieť, čo je za tými dverami. | ...To svetlo! Nič nevidím... | ... | To sídlisko je úplne prázdne...",
+        "dlzka_sceny": 14, "media": { "animacia": "/pribeh/A_SCENy_SLUCky_VOLby/A01_VOL_A03_nazret_von.mp4" } } 
+        },
+        {
+        "text": "Skúsim otvoriť tie zatvorené dvere", "dalsia_scena": "A04_zatvorene_dvere", "posun_casu": 1,
+        "efekty": { "statistiky": { "energia": -2 } },
+        "reakcia": { "text": "... |snáď budú otvorené | ... | ...",
+        "dlzka_sceny": 10, "media": { "animacia": "/pribeh/A_SCENy_SLUCky_VOLby/A01_VOL_A04_zatvorene_dvere.mp4" } }
+        }
+      ]
+  },
+  "A02_najdeny_kompas": {
+    "typ": "manual",
+    "media": { "animacia_slucka": "/pribeh/A_SCENy_SLUCky_VOLby/A02_SLUC_kompas.mp4" },
+    "pribeh": { "text": "Vyzerá byť zlatý | Prečo sa tá strelka tak hýbe? | ... | Niečo tu je čudné.",
+    "dlzka_sceny": 10 },
+      "moznosti": [
+        {
+        "text": "Odložím kompas na neskôr", "dalsia_scena": "A01_prve_vetvenie", "posun_casu": 2,
+        "efekty": { "inventar": { "add": "zlaty_kompas" } },
+        "reakcia": { "text": "... Možno sa mi bude hodiť neskôr | Musím ísť ďalej... ",
+        "dlzka_sceny": 9, "media": { "animacia": "/pribeh/A_SCENy_SLUCky_VOLby/A02_VOL_A01_kompas_odlozit.mp4" } }
+        }
+      ]
+  },
+  "A03_pohlad_von": {
+    "typ": "manual",
+    "media": { "animacia_slucka": "/pribeh/A_SCENy_SLUCky_VOLby/A03_SLUC_pohlad_von.mp4" },
+    "pribeh": { "text": "... To ticho je ohlušujúce. | Všade len betón a prázdno. | Z toho krákania vrán ma mrazí.", 
+    "dlzka_sceny": 10 },
+      "moznosti": [
+        {
+        "text": "Vykročím do neznáma", "dalsia_scena": "B_sidlisko.json_B00_tajomna_postava",
+        "efekty": { "statistiky": { "energia": -3, "dopamin": 5, "motivacia": -4 } },
+        "reakcia": { "text": "Idem von. Musím vedieť, čo sa tu stalo. | Čo to... obraz sa trhá! | Tam niekto stojí...! | Bože... čo to je?!",
+        "dlzka_sceny": 13, "media": { "animacia": "/pribeh/A_SCENy_SLUCky_VOLby/A03_VOL_B01_cesta_von.mp4" } }
+        },
+        {
+        "text": "Vrátim sa naspäť do miestnosti", "dalsia_scena": "A01_prve_vetvenie", "posun_casu": 1,
+        "efekty": { "statistiky": { "dopamin": 2, "motivacia": -2 } },
+        "reakcia": { "text": "Nie... zlý pocit. | Ešte nie som pripravený. | Späť dovnútra. Snáď je tu bezpečnejšie.",
+        "dlzka_sceny": 9, "media": { "animacia": "/pribeh/A_SCENy_SLUCky_VOLby/A03_VOL_A01_vratit_sa.mp4" } }
+        }
+      ]
+  },
+  "A04_zatvorene_dvere": {
+    "typ": "manual",
+    "efekty": { "statistiky": { "motivacia": -2, "energia": -1 } },
+    "media": { "animacia_slucka": "/pribeh/A_SCENy_SLUCky_VOLby/A04_SLUC_zatvorene_dv.mp4" },
+    "pribeh": { "text": "... Nepohnem s nimi. | Ten zvuk... tlkot... je to za dverami? | ... ",
+    "dlzka_sceny": 9 },
+      "moznosti": [
+        { 
+        "text": "Vrátim sa naspäť dovnútra", "dalsia_scena": "A01_prve_vetvenie",
+        "reakcia": { "text": " ... | Ešte sa tu musím poobzerať ...",
+        "dlzka_sceny": 3, "media": { "animacia": "chýba" } }
+        }
+      ]
+  },
+  "KONIEC_PROLOGU": {
+    "typ": "manual", "lokacia": "Koniec dema", "posun_casu": 1,
+    "media": { "hlavne_pozadie": "/pribeh/obrazky/02_pic.jpg" },
+    "pribeh": { "text": "Príbeh na tomto mieste zatiaľ končí. | Hra je stále vo vývoji. Ďakujem za pochopenie a vyskúšanie.", 
+    "dlzka_sceny": 8 },
+      "moznosti": [
+        { 
+        "text": "Hrať odznova od prebudenia", "dalsia_scena": "uvod_prebudenie" }
+      ]
+  }
+}
+

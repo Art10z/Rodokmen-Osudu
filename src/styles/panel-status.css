@@ -1,0 +1,115 @@
+/* Súbor: /src/styles/panel-status.css */
+
+.status-panel {
+    background-color: var(--color-panel-bg); background-image: var(--texture-noise);
+    padding: 15px 20px;
+    /* --- ZMENA: Farba deliacej čiary zmenená na zlatú --- */
+    border-right: 1px solid var(--color-accent);
+    display: flex; flex-direction: column; z-index: 5;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.5);
+    position: relative;
+    opacity: 0;
+    transition: opacity 0.8s ease-out;
+}
+.status-panel.active { opacity: 1; }
+.status-panel.inactive { pointer-events: none; }
+
+.status-top-info h2 { font-family: var(--font-title); color: var(--color-accent); margin: 5px 0 12px; font-size: 1.6em; text-align: center; letter-spacing: 1px; }
+.info-line { display: flex; justify-content: center; align-items: baseline; font-weight: 600; padding: 1px 4px; }
+.info-line.time-line { font-size: 1.4em; font-family: var(--font-title); }
+.time-display .colon { margin: 0 1px; }
+.info-line.date-line { font-size: 0.85em; color: var(--color-text-muted); margin-bottom: 8px; }
+.current-location-display { font-size: 0.9em; color: var(--color-text-muted); text-align: center; padding: 6px 0; margin-top: 8px; }
+.current-location-display span { color: var(--color-text); font-weight: 600; }
+
+.separator {
+    height: 2px;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 1 L20 1' stroke='%232c2824'/%3E%3Cpath d='M80 1 L100 1' stroke='%232c2824'/%3E%3Cpath d='M49 0 L51 0 L50 1 Z' fill='%23c09551'/%3E%3Cpath d='M25 1 L75 1' stroke='%23c09551' stroke-opacity='0.6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 0;
+    margin: 12px 0;
+}
+
+.main-stats-wrapper { flex-grow: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--color-accent) rgba(0,0,0,0.3); padding-right: 5px; margin: 0 -5px; padding-left: 5px; }
+.status-stats-section { display: flex; flex-direction: column; gap: 4px; }
+
+.stat {
+    position: relative;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+/* --- NOVÉ: Pridaný jemný efekt pri prejdení myšou --- */
+.stat:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.stat label { font-weight: 600; font-size: 1em; color: var(--color-text-muted); display: flex; align-items: center; gap: 8px; }
+.stat label::before {
+    content: ''; display: inline-block; width: 14px; height: 14px;
+    background-color: var(--color-text-muted); transition: background-color 0.3s ease;
+}
+.stat:hover label::before { background-color: var(--color-accent); }
+.stat[data-stat="energia"] label::before { mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>') center/contain no-repeat; }
+.stat[data-stat="nasytenie"] label::before { mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.63 7H6.37C5.1 7 4.38 8.33 4.87 9.5l5.58 11.15c.58 1.18 2.23 1.18 2.81 0L19.13 9.5c.49-1.17-.23-2.5-1.5-2.5z"/></svg>') center/contain no-repeat; }
+.stat[data-stat="dopamin"] label::before { mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-4-8a2 2 0 114 0 2 2 0 01-4 0zm8 0a2 2 0 114 0 2 2 0 01-4 0z"/></svg>') center/contain no-repeat; }
+.stat[data-stat="motivacia"] label::before { mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>') center/contain no-repeat; }
+.stat[data-stat="zdravie"] label::before { mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') center/contain no-repeat; }
+
+.stat-value-wrapper { margin-left: auto; display: flex; align-items: center; font-weight: bold; font-size: 1em; }
+.bar-background { width: 100%; margin-top: 5px; background-color: rgba(0,0,0,0.6); height: 6px; border-radius: 3px; flex-basis: 100%; border: 1px solid var(--color-divider); box-shadow: inset 0 2px 4px rgba(0,0,0,0.7); }
+.bar { 
+    height: 100%; 
+    border-radius: 3px; 
+    transition-property: width;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+}
+.bar.bar-energia, .bar.bar-nasytenie, .bar.bar-dopamin { background: linear-gradient(to right, #a07d43, var(--color-accent)); }
+.bar.bar-motivacia { background: linear-gradient(to right, #6b8f54, var(--color-positive)); }
+.bar.bar-zdravie { background: linear-gradient(to right, #8a3528, var(--color-negative)); }
+
+.stat-effect-indicator { width: auto; min-width: 1em; padding: 0 4px; font-size: 1em; font-weight: bold; opacity: 0; margin-right: 4px; text-align: right; transition: opacity 0.3s, transform 0.3s; transform: translateY(5px); }
+.stat-effect-indicator.visible { opacity: 1; transform: translateY(0); }
+.stat-effect-indicator.positive::before { content: '▲'; color: var(--color-positive); }
+.stat-effect-indicator.negative::before { content: '▼'; color: var(--color-negative); }
+
+#mood-label { text-align: center; font-size: 1em; font-weight: bold; margin: 10px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.mood-indicator { position: relative; width: 100%; height: 6px; border-radius: 4px; background: linear-gradient(to right, var(--color-negative) 0%, #E3B341 50%, var(--color-positive) 100%); box-shadow: inset 0 1px 2px rgba(0,0,0,0.6); }
+#mood-gauge {
+    position: absolute;
+    top: 50%;
+    width: 4px;
+    height: 22px;
+    background: var(--color-accent-bright);
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 6px var(--color-accent-glow), 0 0 10px var(--color-accent-glow);
+    margin-left: -2px;
+    transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(-50%);
+}
+.status-mood-section { padding-top: 10px; margin-bottom: auto; }
+
+.action-button { 
+    width: 100%; 
+    margin-top: 10px; 
+    padding: 8px; 
+    background: var(--color-panel-bg); 
+    color: var(--color-text-muted); 
+    /* --- ZMENA: Farba orámovania zmenená na zlatú --- */
+    border: 1px solid var(--color-accent); 
+    font-size: 1em; 
+    cursor: pointer; 
+    border-radius: 4px; 
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05); 
+}
+.action-button:hover { 
+    background-color: var(--color-accent); 
+    color: #fff; 
+}

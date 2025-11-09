@@ -1,0 +1,69 @@
+/* Súbor: /src/styles/global.css */
+
+:root {
+    --font-main: 'Roboto Slab', serif; --font-title: 'Cinzel', serif;
+    --color-bg: #110f0d; --color-panel-bg: #1c1814; --color-text: #d4c8b8;
+    --color-text-muted: #8a8070; --color-accent: #c09551; --color-accent-glow: rgba(192, 149, 81, 0.4);
+    --color-accent-bright: #e0b87a; --color-divider: #2c2824; --color-frame: #080706; 
+    --color-positive: #8bb76f; --color-negative: #a84030;
+    --color-positive-glow: rgba(139, 183, 111, 0.4);
+    --color-negative-glow: rgba(168, 64, 48, 0.4);
+    --texture-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='10' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+}
+
+* { 
+    box-sizing: border-box; 
+}
+
+html, body, #root { 
+    height: 100%; 
+    margin: 0; 
+}
+
+body {
+    background-color: var(--color-bg); 
+    color: var(--color-text); 
+    font-family: var(--font-main);
+    overflow: hidden; 
+    font-size: 14px; 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    background-image: var(--texture-noise);
+}
+
+#root { 
+    /* --- ZMENA: Rám zmenšený na 8px --- */
+    border: 8px solid var(--color-accent); 
+    position: relative; 
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.8); 
+}
+
+.game-container { 
+    display: grid; 
+    grid-template-columns: clamp(280px, 22vw, 350px) 1fr 80px; 
+    grid-template-rows: minmax(0, 1fr); 
+    height: 100%; 
+}
+
+.hidden { 
+    opacity: 0 !important; 
+    visibility: hidden !important; 
+    pointer-events: none !important; 
+}
+
+::-webkit-scrollbar { 
+    width: 8px; 
+}
+
+::-webkit-scrollbar-track { 
+    background: rgba(0,0,0,0.3); 
+}
+
+::-webkit-scrollbar-thumb { 
+    background: var(--color-accent); 
+    border-radius: 4px; 
+    border: 1px solid rgba(0,0,0,0.5); 
+}
+
+::-webkit-scrollbar-thumb:hover { 
+    background: var(--color-accent-bright); 
+}

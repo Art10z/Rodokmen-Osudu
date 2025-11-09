@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodokmeň Osudu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Roboto+Slab:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/src/styles/global.css">
+    <link rel="stylesheet" href="/src/styles/panel-status.css">
+    <link rel="stylesheet" href="/src/styles/okno-pribeh.css">
+</head>
+<body>
+    <div id="root">
+        <div class="game-container">
+            <!-- ĽAVÝ PANEL: STATUS HRÁČA -->
+            <aside class="status-panel inactive">
+                <div class="status-section status-top-info"><h2 id="player-name"></h2><div class="info-line time-line"><span id="time-display">--<span class="colon">:</span>--</span></div><div class="info-line date-line"><span id="date-display"></span></div><p class="current-location-display">Miesto: <span id="location-display"></span></p></div>
+                <div class="separator"></div>
+                <div class="main-stats-wrapper">
+                    <div class="status-stats-section">
+                        <div class="stat" data-stat="energia"><label>Energia:</label><div class="stat-value-wrapper"><div class="stat-effect-indicator"></div><span>--%</span></div><div class="bar-background"><div class="bar bar-energia"></div></div></div>
+                        <div class="stat" data-stat="nasytenie"><label>Nasýtenie:</label><div class="stat-value-wrapper"><div class="stat-effect-indicator"></div><span>--%</span></div><div class="bar-background"><div class="bar bar-nasytenie"></div></div></div>
+                        <div class="stat" data-stat="dopamin"><label>Dopamín:</label><div class="stat-value-wrapper"><div class="stat-effect-indicator"></div><span>--%</span></div><div class="bar-background"><div class="bar bar-dopamin"></div></div></div>
+                        <div class="stat" data-stat="motivacia"><label>Motivácia:</label><div class="stat-value-wrapper"><div class="stat-effect-indicator"></div><span>--%</span></div><div class="bar-background"><div class="bar bar-motivacia"></div></div></div>
+                        <div class="stat" data-stat="zdravie"><label>Zdravie:</label><div class="stat-value-wrapper"><div class="stat-effect-indicator"></div><span>--%</span></div><div class="bar-background"><div class="bar bar-zdravie"></div></div></div>
+                    </div>
+                    <div class="status-section status-mood-section"><div id="mood-label"></div><div class="mood-indicator"><div id="mood-gauge"></div></div></div>
+                </div>
+                <div>
+                    <div class="separator"></div>
+                    <div class="status-section"><button id="restart-button" class="action-button">Reštartovať hru</button></div>
+                </div>
+            </aside>
+
+            <!-- STREDNÝ PANEL: PRÍBEH -->
+            <main class="story-panel">
+                <div class="story-panel-background">
+                    <img id="intro-background-image" src="/pribeh/obrazky/02_pic.jpg" alt="Úvodné pozadie" class="story-background-media">
+                    <video id="scene-video" class="story-background-media hidden" playsinline muted></video>
+                    <img id="scene-media" src="" alt="Pozadie scény" class="story-background-media hidden">
+                </div>
+                <div id="transition-overlay"></div>
+                <div id="top-story-content" class="story-overlay-content"><div class="story-scroll-wrapper"><div id="choices-container" class="choices-container"></div></div></div>
+                <div id="top-panel-handle-wrapper" class="story-panel-handle-wrapper"><button id="top-panel-handle" class="story-panel-handle" aria-label="Skryť/Zobraziť panel volieb"><div class="handle-bar"></div></button></div>
+                <div id="bottom-story-content" class="story-overlay-content"><div class="story-scroll-wrapper"><div id="story-text-content" class="story-text"></div></div></div>
+                <div id="bottom-panel-handle-wrapper" class="story-panel-handle-wrapper"><button id="bottom-panel-handle" class="story-panel-handle" aria-label="Skryť/Zobraziť panel príbehu"><div class="handle-bar"></div></button></div>
+                <div id="intro-overlay">
+                    <div id="loading-state" class="intro-state"><p class="intro-text">NAČÍTAVAM...</p></div>
+                    <div id="name-entry-state" class="intro-state hidden">
+                        <p class="intro-text">Ako sa voláš?</p>
+                        <input type="text" id="name-input" class="name-input" maxlength="20" placeholder="Zadaj meno...">
+                        <button id="confirm-name-button" class="intro-button">Potvrdiť</button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- PRAVÝ PANEL: INVENTÁR -->
+            <aside id="inventory-panel" class="inventory-panel inactive">
+                <div class="panel-header"><h3>Predmety</h3></div>
+                <div id="inventory-items-container" class="scroll-wrapper">
+                    <!-- Generované predmety sa zobrazia tu -->
+                </div>
+            </aside>
+        </div>
+
+        <!-- Modálny dialóg pre reštart -->
+        <div id="restart-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <p>Naozaj chceš reštartovať hru a stratiť všetok postup?</p>
+                <div class="modal-buttons">
+                    <button id="restart-confirm-button" class="modal-button confirm">Áno, reštartovať</button>
+                    <button id="restart-cancel-button" class="modal-button cancel">Nie, pokračovať</button>
+                </div>
+            </div>
+        </div>
+        <audio id="scene-audio" class="hidden"></audio>
+        <!-- PRIDANÝ AUDIO PRVOK PRE TEMATICKÚ HUDBU -->
+        <audio id="theme-music" class="hidden" loop></audio>
+    </div>
+    
+    <script type="module" src="/src/engine.js"></script>
+</body>
+</html>
