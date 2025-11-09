@@ -1,0 +1,1068 @@
+# 🌳 Rodokmeň Osudu
+
+> **Interaktívny príbeh kde každé rozhodnutie mení tvoj osud a niet cesty späť.**
+
+[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite)](https://vitejs.dev/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+---
+
+## 📖 Obsah
+
+- [Filozofia Projektu](#-filozofia-projektu)
+- [Abecedná Logika](#-abecedná-logika---kľúč-k-jednoduchosti)
+- [Herné Mechaniky](#-herné-mechaniky)
+- [Technická Dokumentácia](#-technická-dokumentácia)
+- [Inštalácia a Spustenie](#-inštalácia-a-spustenie)
+- [Tvorba Obsahu](#-tvorba-obsahu)
+- [Príklady](#-príklady)
+- [Roadmap](#-roadmap)
+
+---
+
+## 🎯 Filozofia Projektu
+
+### Prelomenie Bariér Komplexnosti
+
+**Rodokmeň Osudu** nie je klasická hra s jedným príbehom. Je to **experiment v nelineárnom storytellingu** kde:
+
+- ❌ **NIE JE** jeden lineárny príbeh na 10 hodín
+- ✅ **JE** krátky príbeh na 15-30 minút, ale s **500+ unikátnymi koncovkami**
+- 🌳 Každé rozhodnutie vytvára **novú vetvu reality**
+- 🔄 Hra je určená na **opakované hranie** - každý playthrough odhaľuje niečo nové
+- 📂 **Štruktúra súborov = štruktúra príbehu** (priečinky ako vetvy)
+- ⏩ **Jednosmerný tok času** - medzi lokáciami niet návratu
+- 🔁 **Slučky v lokáciách** - zostať v miestnosti pokým ťa štatistiky nedohnú
+- 📊 **Štatistiky ako limiter** - každá akcia má cenu (energia/zdravie/čas)
+
+### Problémy s Existujúcimi Nástrojmi
+
+**Twine/Ink:**
+- ✅ Dobré pre textové príbehy
+- ❌ Slabá podpora multimédií
+- ❌ Graf uzlov sa stáva chaotickým pri 100+ scénach
+
+**RPG Maker/Ren'Py:**
+- ✅ Bohaté vizuálne možnosti
+- ❌ Komplikované pre nelineárne príbehy
+- ❌ Vyžadujú programovanie pre komplexnú logiku
+
+**Rodokmeň Osudu:**
+- ✅ JSON = jednoduché, čitateľné, bez programovania
+- ✅ Plná podpora videa/obrázkov/zvuku
+- ✅ Priečinky = vizuálny strom rozhodnutí
+- ✅ Jednosmernosť = žiadny chaos spätných väzieb
+
+---
+
+## 🔤 Abecedná Logika - Kľúč k Jednoduchosti
+
+### Princíp 1: Jednosmernosť MEDZI Lokáciami
+
+**Každé písmeno = Časový bod v príbehu, z ktorého niet návratu.**
+
+```
+A (Ráno v izbe) → B (Kuchyňa) → C (Chodba) → D (Vonku) → KONIEC
+     ↓               ↓            ↓           ↓
+     X               X            X           X
+  NEMOŽNÉ        NEMOŽNÉ      NEMOŽNÉ     NEMOŽNÉ
+  (späť)         (späť)       (späť)      (späť)
+```
+
+**Prečo?**
+1. **Eliminuje chaos:** Nemusíš riešiť "čo ak hráč ide A→B→A→C→B→A"
+2. **Zjednodušuje tvorbu:** Píšeš len dopredu (A→B→C), nie sieť (A⇄B⇄C)
+3. **Rozhodnutia majú váhu:** Raz odídeš = nenávrat = musíš žiť s dôsledkami
+4. **Testovanie:** Stačí prejsť A→B→C raz, nie 100× všetky kombinácie návratov
+
+### Princíp 2: Slučky VNÚTRI Lokácií
+
+**V rámci jednej scény môžeš zostať donekonečna... až kým ťa štatistiky nedohnú.**
+
+```
+B (Kuchyňa)
+├─ "Otvoriť chladničku" → B (energia -2) → B → B ...
+├─ "Pozrieť von oknom" → B (energia -1) → B → B ...
+└─ "Odísť" → C (Chodba) ✓ PRECHOD ĎALEJ
+```
+
+**Výhody slučiek:**
+- 🎭 **Storytelling:** "Nerozhodnosť", "Váhanie", "Strach ísť ďalej"
+- 🎮 **Gameplay:** Hráč si musí dobre premyslieť kedy pokračovať
+- 🔢 **Variabilita:** Rovnaká lokácia = 10 rôznych skúseností (podľa počtu slučiek)
+- ⚖️ **Prirodzený limit:** Štatistiky (energia/zdravie) zaručujú koniec
+
+**Príklad:**
+```
+A01 (Ráno v posteli)
+├─ "Vstať" → B10 (Kuchyňa)
+└─ "Ostať ležať" → A01 (energia +5, čas +10 min)
+   └─ "Ešte chvíľu" → A01 (energia +3, čas +10 min)
+      └─ "Vstať" → B10
+      
+Po 3. slučke: Čas = 8:30
+Po 6. slučke: Čas = 9:00 → AUTO → B50_neskor_rano
+   └─ "Zameskal si školu!"
+```
+
+### Princíp 3: Flexibilné Číslovanie
+
+**Písmeno = Časť príbehu, Číslo = Varianta**
+
+```
+A01 = Ráno v izbe (bežný deň)
+A02 = Ráno v izbe (po zlej noci)
+A99 = Ráno v izbe (víkend)
+A105 = Ráno v izbe (špeciálna udalosť)
+```
+
+**Výhody:**
+- ✅ Nemusíš premenovávať celý strom pri vložení novej vetvy
+- ✅ Čísla môžu mať sémantický význam (99 = alternatíva, 10-20 = ranné varianty)
+- ✅ Nezávislé vetvy nemusia mať postupné čísla
+
+**Pravidlo:** Zo scény `A*` môžeš ísť len do `B*`, `C*`, `D*`, ... (nie späť do `A*` z inej lokácie)
+
+---
+
+## 🎮 Herné Mechaniky
+
+### Štatistiky
+
+**Tri hlavné atribúty (0-100):**
+
+| Atribút | Čo ovplyvňuje | Ako sa mení |
+|---------|--------------|-------------|
+| **Zdravie** | Fyzický stav | -10 pri zranení, +20 po odpočinku |
+| **Nálada** | Psychický stav | -5 pri strese, +10 pri radosti |
+| **Energia** | Vyčerpanosť | -2 pri akcii, +5 pri oddychu |
+
+**Game Over podmienky:**
+- Akákoľvek štatistika = 0 → Automatický prechod na koncovú scénu
+- Príklad: `energia = 0` → `Z99_smrt_vyčerpaním`
+
+### Inventár
+
+**Dynamický zoznam predmetov:**
+- 🔑 Kľúče, mapy, jedlo, zbrane, atď.
+- Voľby môžu vyžadovať predmety: `"podmienka": { "maPredmet": "kluc" }`
+- Reakcie môžu meniť inventár: `"pridatPredmet": "mapa"`, `"odobratPredmet": "kluc"`
+
+### Čas
+
+**Virtuálny čas plynie:**
+- Začiatok: 2024-01-01 08:00
+- Akcie posúvajú čas: `"posunCasu": 15` (minút)
+- Auto-prechody pri deadlinoch: `"cas > 9:00"` → neskor
+
+### Podmienky Volieb
+
+**Voľba sa zobrazí len ak:**
+```json
+"podmienka": {
+  "maPredmet": "kluc",           // Musí mať kľúč
+  "nesmieMat": "zbran",          // Nesmie mať zbraň
+  "statistika": "energia",       // Kontrola štatistiky
+  "min": 30,                     // Min. 30 energie
+  "max": 100                     // Max. 100 energie
+}
+```
+
+**Bez splnenia podmienky = voľba sa nezobrazí.**
+
+### Typy Scén
+
+#### **1. Auto Scény**
+```json
+{
+  "type": "auto",
+  "trvanie": 10,
+  "dalsia": "rano"
+}
+```
+- Video sa prehrá, text sa vypíše
+- Po `trvanie` sekundách → automatický prechod
+- Bez interakcie hráča (cutscenes, intro, outro)
+
+#### **2. Manual Scény**
+```json
+{
+  "type": "manual",
+  "moznosti": [...]
+}
+```
+- Video sa prehrá → loop sa opakuje
+- Zobrazujú sa voľby
+- Hráč rozhoduje kedy pokračovať
+
+---
+
+## 🛠️ Technická Dokumentácia
+
+### Architektúra
+
+```
+Rodokmeň Osudu/
+├── public/
+│   └── pribeh/               # Obsah hry
+│       ├── intro.json        # Definícia scény
+│       ├── intro.mp4         # Hlavné video
+│       ├── loop-intro.mp4    # Loop animácia
+│       ├── A01_VOL_B05.mp4   # Prechodová animácia
+│       │
+│       ├── A_rano/           # Priečinok pre lokáciu A
+│       │   ├── rano.json
+│       │   ├── rano.mp4
+│       │   └── loop-rano.mp4
+│       │
+│       └── B_kuchyna/        # Priečinok pre lokáciu B
+│           ├── kuchyna.json
+│           ├── B05_VOL_B05_CHLAD.mp4  # Slučka
+│           └── B05_VOL_C12.mp4        # Prechod ďalej
+│
+├── src/
+│   ├── engine.js             # Herná logika
+│   ├── ui.js                 # DOM manipulácia
+│   └── styles/
+│       ├── main.css          # Globálne štýly
+│       ├── menu.css          # Menu obrazovka
+│       ├── game.css          # Herná obrazovka
+│       └── stats.css         # Štatistiky a inventár
+│
+├── index.html                # Vstupný bod
+├── vite.config.js            # Vite konfigurácia
+└── package.json              # Závislosti
+```
+
+### Engine.js - Kľúčové Funkcie
+
+#### **Cache Systém**
+```javascript
+let mediaCache = new Map();           // Blob URL cache
+let prebiehajucePreklady = new Map(); // Prevent duplicate fetches
+
+async function ziskatAleboNacitatMedium(url) {
+    // 1. Kontrola cache
+    if (mediaCache.has(url)) return mediaCache.get(url);
+    
+    // 2. Kontrola prebiehajúcich loadov
+    if (prebiehajucePreklady.has(url)) {
+        return prebiehajucePreklady.get(url);
+    }
+    
+    // 3. Fetch a uloženie
+    const blob = await fetch(url).then(r => r.blob());
+    const blobUrl = URL.createObjectURL(blob);
+    mediaCache.set(url, blobUrl);
+    return blobUrl;
+}
+
+function vycistiatStaruCache() {
+    if (mediaCache.size <= 50) return;
+    
+    // Vymaž najstaršie 30% médií
+    const entries = Array.from(mediaCache.entries());
+    const toRemove = entries.slice(0, Math.floor(50 * 0.3));
+    
+    toRemove.forEach(([url, blobUrl]) => {
+        URL.revokeObjectURL(blobUrl);  // Uvoľni pamäť!
+        mediaCache.delete(url);
+    });
+}
+```
+
+#### **Preload Systém**
+```javascript
+async function pripravitMediaPreScenu(scena) {
+    const urls = new Set();
+    
+    // Hlavné médiá scény
+    if (scena.media?.video) urls.add(scena.media.video);
+    if (scena.media?.loop) urls.add(scena.media.loop);
+    if (scena.media?.hudba) urls.add(scena.media.hudba);
+    
+    // Prechodové animácie pre všetky voľby
+    scena.moznosti?.forEach(volba => {
+        if (volba.id) {
+            urls.add(`pribeh/${volba.id}.mp4`);
+        }
+    });
+    
+    // Batch loading (max 3 paralelne)
+    const urlsArray = Array.from(urls);
+    for (let i = 0; i < urlsArray.length; i += 3) {
+        const batch = urlsArray.slice(i, i + 3);
+        await Promise.allSettled(
+            batch.map(url => ziskatAleboNacitatMedium(url))
+        );
+    }
+}
+```
+
+#### **Hlavný Game Loop**
+```javascript
+async function vykreslitScenu(idSceny) {
+    // 1. Preload médií
+    await pripravitMediaPreScenu(scena);
+    
+    // 2. Fade-out
+    await zobrazitPrechodovyOverlay(800);
+    
+    // 3. Načítaj médiá (video, loop, hudba)
+    await aktualizovatMediumSceny({
+        typ: 'video',
+        url: videoUrl,
+        loop: loopUrl
+    });
+    
+    // 4. Fade-in
+    await skrytPrechodovyOverlay(800);
+    
+    // 5. Vypíš text (s typing efektom)
+    await vypisatText(scena.text, scena.trvanie || 5);
+    
+    // 6. Zobraz voľby (pre manual) alebo počkaj (pre auto)
+    if (scena.type === 'manual') {
+        const dostupneVolby = scena.moznosti.filter(splnaVolbuPodmienky);
+        zobrazitVolby(dostupneVolby, spracujVolbu);
+    } else if (scena.type === 'auto') {
+        setTimeout(() => {
+            vykreslitScenu(scena.dalsia);
+        }, scena.trvanie * 1000);
+    }
+}
+```
+
+### UI.js - Animácie a DOM
+
+#### **Typing Efekt**
+```javascript
+async function vypisatText(text, trvanie) {
+    const casti = text.split('|');
+    
+    for (const cast of casti) {
+        dom.textDisplay.textContent = '';
+        
+        // Píš znak po znaku
+        for (const znak of cast) {
+            dom.textDisplay.textContent += znak;
+            await sleep(50); // 50ms medzi znakmi
+        }
+        
+        await sleep((trvanie / casti.length) * 1000);
+    }
+}
+```
+
+#### **Animácia Percent**
+```javascript
+async function animovatPercenta(element, od, do, trvanie) {
+    const start = Date.now();
+    
+    return new Promise(resolve => {
+        function animate() {
+            const elapsed = Date.now() - start;
+            const progress = Math.min(elapsed / trvanie, 1);
+            
+            const aktualnaHodnota = od + (do - od) * progress;
+            element.textContent = `${Math.round(aktualnaHodnota)}%`;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                resolve();
+            }
+        }
+        animate();
+    });
+}
+```
+
+#### **Video Systém s Loop**
+```javascript
+async function aktualizovatMediumSceny({ typ, url, loop }) {
+    if (typ === 'video') {
+        dom.sceneVideo.src = url;
+        dom.sceneVideo.loop = false;
+        dom.sceneVideo.style.display = 'block';
+        
+        // Po skončení hlavného videa → prepni na loop
+        if (loop) {
+            dom.sceneVideo.addEventListener('ended', () => {
+                dom.sceneVideo.src = loop;
+                dom.sceneVideo.loop = true;
+                dom.sceneVideo.play();
+            }, { once: true });
+        }
+        
+        await dom.sceneVideo.play();
+    }
+}
+```
+
+### Formát JSON Scény
+
+**Kompletný príklad:**
+```json
+{
+  "id": "B05_kuchyna",
+  "type": "manual",
+  "text": "Si v kuchyni. | Slnko svietí cez okno. | Čo budeš robiť?",
+  "media": {
+    "video": "pribeh/B05_kuchyna/kuchyna.mp4",
+    "loop": "pribeh/B05_kuchyna/loop-kuchyna.mp4",
+    "hudba": "pribeh/B05_kuchyna/hudba.mp3",
+    "obrazok": "pribeh/B05_kuchyna/fallback.jpg"
+  },
+  "trvanie": 5,
+  "moznosti": [
+    {
+      "id": "B05_VOL_B05_CHLAD",
+      "text": "Otvoriť chladničku",
+      "podmienka": {
+        "statistika": "energia",
+        "min": 10
+      },
+      "reakcia": {
+        "text": "V chladničke je prázdno...",
+        "trvanie": 2,
+        "efekty": {
+          "energia": -5,
+          "nalada": -2
+        },
+        "posunCasu": 5,
+        "dalsia": "B05_kuchyna"
+      }
+    },
+    {
+      "id": "B05_VOL_C12",
+      "text": "Dať si raňajky",
+      "podmienka": {
+        "maPredmet": "jedlo"
+      },
+      "reakcia": {
+        "text": "Vychutnávaš si raňajky...",
+        "trvanie": 3,
+        "efekty": {
+          "energia": 20,
+          "nalada": 10,
+          "odobratPredmet": "jedlo"
+        },
+        "posunCasu": 15,
+        "dalsia": "C12_jedalny_stol"
+      }
+    },
+    {
+      "id": "B05_VOL_D20",
+      "text": "Opustiť kuchyňu",
+      "reakcia": {
+        "dalsia": "D20_chodba"
+      }
+    }
+  ]
+}
+```
+
+**Podporované Vlastnosti:**
+
+| Vlastnosť | Typ | Popis |
+|-----------|-----|-------|
+| `id` | string | Jedinečný identifikátor scény |
+| `type` | "auto"\|"manual" | Auto = bez volieb, Manual = s voľbami |
+| `text` | string | Text scény (oddeľ `\|` pre pauzy) |
+| `media.video` | string | Cesta k hlavnému videu |
+| `media.loop` | string | Cesta k loop videu |
+| `media.hudba` | string | Cesta k hudobnej stope |
+| `media.obrazok` | string | Fallback obrázok |
+| `trvanie` | number | Trvanie v sekundách |
+| `dalsia` | string | ID ďalšej scény (pre auto) |
+| `moznosti` | array | Pole volieb (pre manual) |
+
+**Reakcia Voľby:**
+
+| Vlastnosť | Typ | Popis |
+|-----------|-----|-------|
+| `text` | string | Text reakcie |
+| `trvanie` | number | Trvanie v sekundách |
+| `efekty.zdravie` | number | Zmena zdravia (+/-) |
+| `efekty.nalada` | number | Zmena nálady (+/-) |
+| `efekty.energia` | number | Zmena energie (+/-) |
+| `efekty.pridatPredmet` | string | Pridať predmet do inventára |
+| `efekty.odobratPredmet` | string | Odobrať predmet z inventára |
+| `posunCasu` | number | Posun času v minútach |
+| `dalsia` | string | ID ďalšej scény |
+
+**Podmienky Voľby:**
+
+| Vlastnosť | Typ | Popis |
+|-----------|-----|-------|
+| `maPredmet` | string | Vyžaduje predmet v inventári |
+| `nesmieMat` | string | Nesmie mať predmet |
+| `statistika` | string | Názov štatistiky ("zdravie"\|"nalada"\|"energia") |
+| `min` | number | Minimálna hodnota štatistiky |
+| `max` | number | Maximálna hodnota štatistiky |
+
+---
+
+## 🚀 Inštalácia a Spustenie
+
+### Požiadavky
+
+- **Node.js** 18+ ([Stiahnuť](https://nodejs.org/))
+- **Git** ([Stiahnuť](https://git-scm.com/))
+
+### Inštalácia
+
+```bash
+# 1. Klonuj repozitár
+git clone https://github.com/tvoj-username/rodokmn-osudu.git
+cd rodokmn-osudu
+
+# 2. Nainštaluj závislosti
+npm install
+```
+
+### Vývoj
+
+```bash
+# Spusti dev server s hot reload
+npm run dev
+```
+
+Otvor [http://localhost:5173/](http://localhost:5173/) v prehliadači.
+
+### Build
+
+```bash
+# Vytvor produkčnú verziu
+npm run build
+
+# Výstup v priečinku dist/
+```
+
+### Preview Buildu
+
+```bash
+# Prezri si build lokálne
+npm run preview
+```
+
+---
+
+## 📖 Tvorba Obsahu
+
+### 1. Vytvor Novú Scénu
+
+**Súbor:** `public/pribeh/C20_obchod/obchod.json`
+
+```json
+{
+  "id": "C20_obchod",
+  "type": "manual",
+  "text": "Vchádzaš do obchodu. | Regály sú plné tovaru.",
+  "media": {
+    "video": "pribeh/C20_obchod/obchod.mp4",
+    "loop": "pribeh/C20_obchod/loop-obchod.mp4",
+    "hudba": "pribeh/C20_obchod/hudba.mp3"
+  },
+  "trvanie": 5,
+  "moznosti": [
+    {
+      "id": "C20_VOL_C20_REGALY",
+      "text": "Prechádzať sa medzi regálmi",
+      "reakcia": {
+        "text": "Pozeráš na tovar...",
+        "trvanie": 2,
+        "efekty": {
+          "energia": -2,
+          "nalada": 1
+        },
+        "posunCasu": 5,
+        "dalsia": "C20_obchod"
+      }
+    },
+    {
+      "id": "C20_VOL_C20_KUPIT",
+      "text": "Kúpiť jedlo",
+      "podmienka": {
+        "maPredmet": "peniaze"
+      },
+      "reakcia": {
+        "text": "Kupuješ jedlo za 5€.",
+        "trvanie": 2,
+        "efekty": {
+          "odobratPredmet": "peniaze",
+          "pridatPredmet": "jedlo",
+          "nalada": 5
+        },
+        "posunCasu": 10,
+        "dalsia": "C20_obchod"
+      }
+    },
+    {
+      "id": "C20_VOL_D30",
+      "text": "Opustiť obchod",
+      "reakcia": {
+        "text": "Odchádzaš z obchodu.",
+        "trvanie": 1,
+        "dalsia": "D30_ulica"
+      }
+    }
+  ]
+}
+```
+
+### 2. Pridaj Médiá
+
+**Štruktúra:**
+```
+pribeh/C20_obchod/
+├── obchod.json                  # Definícia scény
+├── obchod.mp4                   # Hlavná animácia (3-10s)
+├── loop-obchod.mp4              # Loop (2-5s, bezšvový)
+├── hudba.mp3                    # Atmosférická hudba
+├── C20_VOL_C20_REGALY.mp4       # Slučka: prechádzanie
+├── C20_VOL_C20_KUPIT.mp4        # Slučka: nakupovanie
+└── C20_VOL_D30.mp4              # Prechod na ulicu
+```
+
+**Odporúčania:**
+- **Hlavné video:** 1080p, 30 FPS, H.264, 5-10 MB
+- **Loop video:** 720p, 30 FPS, bezšvový začiatok/koniec, 2-5 MB
+- **Prechodové video:** 720p, krátke (2-5s), dramatické
+- **Hudba:** MP3, 128 kbps, loop-friendly
+
+### 3. Prepoj z Predošlej Scény
+
+V `B10_kuchyna/kuchyna.json` pridaj voľbu:
+
+```json
+{
+  "id": "B10_VOL_C20",
+  "text": "Ísť do obchodu",
+  "reakcia": {
+    "text": "Obliekaš sa a odchádzaš...",
+    "trvanie": 2,
+    "efekty": {
+      "energia": -10
+    },
+    "posunCasu": 30,
+    "dalsia": "C20_obchod"
+  }
+}
+```
+
+### 4. Vytvor Koncovku
+
+**Súbor:** `public/pribeh/Z99_game_over/game_over.json`
+
+```json
+{
+  "id": "Z99_game_over",
+  "type": "auto",
+  "text": "Tvoja energia klesla na nulu. | Padáš na zem... | KONIEC",
+  "media": {
+    "video": "pribeh/Z99_game_over/game_over.mp4",
+    "hudba": "pribeh/Z99_game_over/sad_music.mp3"
+  },
+  "trvanie": 10
+}
+```
+
+**Koncovky nemajú `dalsia` ani `moznosti` = koniec hry.**
+
+---
+
+## 💡 Príklady
+
+### Príklad 1: Slučka až do Vyčerpania
+
+```json
+{
+  "id": "A15_posteľ",
+  "type": "manual",
+  "text": "Ležíš v posteli. Nechce sa ti vstávať.",
+  "moznosti": [
+    {
+      "id": "A15_VOL_A15_ZOSTAT",
+      "text": "Zostať ešte chvíľu",
+      "reakcia": {
+        "text": "Zatváraš oči a relaxuješ...",
+        "trvanie": 2,
+        "efekty": {
+          "energia": 3,
+          "nalada": 2,
+          "posunCasu": 10
+        },
+        "dalsia": "A15_posteľ"
+      }
+    },
+    {
+      "id": "A15_VOL_B20",
+      "text": "Konečne vstať",
+      "reakcia": {
+        "dalsia": "B20_izba_rano"
+      }
+    }
+  ]
+}
+```
+
+**Automatický Game Over:**
+Engine kontroluje štatistiky po každej reakcii. Keď `cas > 9:00`:
+
+```javascript
+// V engine.js (automaticky)
+if (hernyStav.cas > new Date(2024, 0, 1, 9, 0)) {
+    await vykreslitScenu('Z10_neskor_rano');
+}
+```
+
+### Príklad 2: Podmienené Voľby
+
+```json
+{
+  "id": "B30_dvere",
+  "moznosti": [
+    {
+      "id": "B30_VOL_C40_KLUC",
+      "text": "Otvoriť kľúčom",
+      "podmienka": {
+        "maPredmet": "kluc"
+      },
+      "reakcia": {
+        "text": "Dvere sa otvárajú...",
+        "efekty": {
+          "odobratPredmet": "kluc"
+        },
+        "dalsia": "C40_miestnost"
+      }
+    },
+    {
+      "id": "B30_VOL_C45_SILA",
+      "text": "Vyraziť silou",
+      "podmienka": {
+        "statistika": "energia",
+        "min": 50
+      },
+      "reakcia": {
+        "text": "Napnúš sa a vyrazíš dvere!",
+        "efekty": {
+          "energia": -30,
+          "zdravie": -10
+        },
+        "dalsia": "C45_miestnost_rozbite_dvere"
+      }
+    },
+    {
+      "id": "B30_VOL_A25",
+      "text": "Vrátiť sa",
+      "reakcia": {
+        "dalsia": "A25_chodba"
+      }
+    }
+  ]
+}
+```
+
+**Výsledok:**
+- Ak **máš kľúč** → zobrazí sa 3 voľby
+- Ak **nemáš kľúč, ale máš 50+ energie** → 2 voľby (sila, vrátiť sa)
+- Ak **nemáš kľúč ani energiu** → 1 voľba (vrátiť sa)
+
+### Príklad 3: Vetvy s Rôznou Hudbou
+
+```json
+// A01 - Optimistický deň
+{
+  "id": "A01_rano_dobry",
+  "media": {
+    "hudba": "pribeh/hudba/happy_morning.mp3"
+  },
+  "moznosti": [
+    {
+      "id": "A01_VOL_B10",
+      "text": "Ísť do školy",
+      "reakcia": { "dalsia": "B10_skola_nadej" }
+    }
+  ]
+}
+
+// A02 - Depresívny deň
+{
+  "id": "A02_rano_zly",
+  "media": {
+    "hudba": "pribeh/hudba/sad_morning.mp3"
+  },
+  "moznosti": [
+    {
+      "id": "A02_VOL_B15",
+      "text": "Snažiť sa ísť do školy...",
+      "reakcia": { "dalsia": "B15_skola_depresia" }
+    }
+  ]
+}
+```
+
+---
+
+## 🎨 Konvencie a Best Practices
+
+### Pomenovanie Súborov
+
+#### **Scény**
+```
+[PISMENO][CISLO]_[nazov_sceny]/
+    ├── [nazov].json
+    ├── [nazov].mp4
+    ├── loop-[nazov].mp4
+    └── hudba.mp3
+```
+
+**Príklady:**
+- `A01_rano_v_izbe/`
+- `B05_kuchyna/`
+- `Z99_game_over/`
+
+#### **Prechodové Animácie**
+```
+[OD]_VOL_[DO].mp4
+[OD]_VOL_[DO]_[AKCIA].mp4  (pre slučky s rôznymi animáciami)
+```
+
+**Príklady:**
+- `A01_VOL_B05.mp4` - z A01 do B05
+- `B05_VOL_B05_CHLAD.mp4` - slučka (otvorenie chladničky)
+- `B05_VOL_C12.mp4` - prechod z B05 do C12
+
+### Pravidlá Vetvenia
+
+1. **Jednosmernosť medzi lokáciami:**
+   - ✅ `A → B → C → D`
+   - ❌ `B → A` (späť do inej lokácie)
+
+2. **Slučky vnútri lokácie:**
+   - ✅ `B05 → B05 → B05` (v rámci tej istej scény)
+   - ⚠️ Každá slučka MÁ efekt (energia/čas/nálada)
+
+3. **Koncovky:**
+   - Scény `Z_*` sú finálne
+   - Nemajú `dalsia` ani `moznosti`
+   - Typ: `"auto"`
+
+### Optimalizácia Médií
+
+**Video:**
+```bash
+# Kompresia (ffmpeg)
+ffmpeg -i input.mp4 -vcodec h264 -acodec aac -b:v 2M -b:a 128k output.mp4
+
+# Loop video (bezšvové)
+ffmpeg -i input.mp4 -filter_complex "[0]reverse[r];[0][r]concat,loop=5:size=1" loop.mp4
+```
+
+**Audio:**
+```bash
+# MP3 kompresia
+ffmpeg -i input.wav -codec:a libmp3lame -b:a 128k output.mp3
+```
+
+### Testovanie Scén
+
+**Checklist:**
+- [ ] Scéna má jedinečné `id`
+- [ ] Video existuje a hrá sa
+- [ ] Loop video sa bezšvovo opakuje
+- [ ] Text nemá preklepy
+- [ ] Voľby majú správne `id` (formát `[OD]_VOL_[DO]`)
+- [ ] Podmienky fungujú (skús bez predmetu/štatistiky)
+- [ ] Efekty sa aplikujú (kontroluj štatistiky)
+- [ ] Prechody vedú na existujúce scény
+- [ ] Žiadna slučka bez efektov
+- [ ] Game Over pri 0 štatistikách
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Hotové (v1.0)
+- [x] Základný engine (scény, voľby, efekty)
+- [x] Cache systém s automatickým čistením
+- [x] Preload médií
+- [x] Štatistiky (zdravie, nálada, energia)
+- [x] Inventár systém
+- [x] Časový systém
+- [x] Podmienky volieb
+- [x] Auto a Manual scény
+- [x] Video/obrazok/hudba podpora
+- [x] Typing efekt pre text
+- [x] Animácie štatistík
+- [x] Fade prechody
+- [x] Responzívny dizajn
+
+### 🚧 V Pláne (v1.1)
+- [ ] Save/Load systém (localStorage)
+- [ ] Achievements systém
+- [ ] Štatistiky hry (počet playthrough, návštívené scény)
+- [ ] Galéria koncoviek (unlock po získaní)
+- [ ] Audio nastavenia (hlasitosť hudby/SFX)
+- [ ] Titulky pre videá
+- [ ] Mobilná verzia (touch controls)
+- [ ] PWA (Progressive Web App) - offline hra
+
+### 🔮 Budúcnosť (v2.0)
+- [ ] Editor scén (vizuálne vytváranie bez JSON)
+- [ ] Export do APK/EXE
+- [ ] Multiplayer rozhodnutia (hlasovanie)
+- [ ] Procedurálne generovanie vetviev
+- [ ] AI generovanie textov/videí
+- [ ] Steam/Itch.io integrácia
+
+---
+
+## 📊 Matematika Projektu
+
+### Exponenciálny Rast Obsahu
+
+**Základné vetvenie:**
+```
+10 scén × 2 voľby/scénu = 2^10 = 1,024 koncoviek
+```
+
+**S slučkami (priemer 3 slučky/scénu):**
+```
+10 scén × 2 voľby × 3 varianty slučiek = 2^10 × 3^10 = 60,466,176 ciest!
+```
+
+**S limitmi štatistík (max 20 slučiek celkovo):**
+```
+~5,000 reálnych unikátnych ciest
+```
+
+**Porovnanie s inými hrami:**
+
+| Hra | Typ | Dĺžka | Replay Value | Obsah |
+|-----|-----|-------|--------------|-------|
+| **Klasické RPG** | Lineárne | 50h | Nízke | 50h |
+| **The Witcher 3** | Vetvené | 100h | Stredné | 300h (všetky cesty) |
+| **Detroit: Become Human** | Silne vetvené | 12h | Vysoké | 1,000h (všetky varianty) |
+| **Rodokmeň Osudu** | Exponenciálne vetvené + slučky | 30 min | Extrémne vysoké | 2,500h (5,000 ciest × 30 min) |
+
+### Praktický Príklad
+
+**Jednoduchý príbeh s 5 scénami:**
+
+```
+A (Ráno)
+├─ Voľba 1: Vstať → B (Kuchyňa)
+│  ├─ Slučka: Pozrieť do chladničky (0-3×)
+│  ├─ Voľba 1: Raňajky → C (Jedalňa)
+│  └─ Voľba 2: Preskočiť → D (Škola hladný)
+│
+└─ Voľba 2: Zostať → E (Neskoré ráno)
+   └─ Slučka: Ležať (0-5×)
+      └─ Auto → F (Zameškaná škola)
+```
+
+**Výsledok:**
+- 2 hlavné vetvy (vstať vs zostať)
+- B má 4 varianty (0-3 slučky)
+- E má 6 variantov (0-5 slučiek)
+- = **2 × (4 + 6) = 20 unikátnych playthrough**
+
+**Z 5 scén = 20 rôznych skúseností!**
+
+---
+
+## 🤝 Prispievanie
+
+### Ako Prispieť
+
+1. **Fork repozitár**
+2. **Vytvor branch** (`git checkout -b nova-funkcia`)
+3. **Commituj zmeny** (`git commit -m 'Pridaná nová funkcia'`)
+4. **Push do branch** (`git push origin nova-funkcia`)
+5. **Otvor Pull Request**
+
+### Pravidlá
+
+- ✅ Dodržuj existujúci coding style
+- ✅ Testuj zmeny pred commitom
+- ✅ Dokumentuj nové funkcie
+- ✅ Žiadne TODO komentáre v produkčnom kóde
+- ✅ Dodržuj abecednú logiku (A→B→C)
+
+### Nápady na Prispenie
+
+- 📖 Napísať novú vetvu príbehu
+- 🎨 Vytvoriť nové vizuálne motívy (dark/light theme)
+- 🎵 Pridať novú hudobnú stopu
+- 🐛 Opraviť bug
+- 📝 Vylepšiť dokumentáciu
+- 🌐 Preložiť do iného jazyka
+
+---
+
+## 📄 Licencia
+
+MIT License
+
+Copyright (c) 2024 Rodokmeň Osudu
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 🙏 Poďakovanie
+
+**Tento projekt vznikol z:**
+- Frustrácie s existujúcimi nástrojmi (príliš zložité alebo príliš limitované)
+- Túžby po jednoduchosti s hĺbkou
+- Viere, že nelineárny storytelling môže byť prístupný každému
+
+**Kľúčové inovácie:**
+1. 🔤 **Abecedná jednosmernosť** - žiadny chaos návratov medzi lokáciami
+2. 🔁 **Slučky v lokáciách** - nekonečná hĺbka v rámci jedného miesta
+3. 📊 **Štatistiky ako limiter** - prirodzené ukončenie slučiek
+4. 📂 **Priečinky ako graf** - vizuálna organizácia príbehu
+
+**Filozofia:**
+> "Jednosmernosť nie je obmedzenie - je to oslobodenie.  
+> Slučky nie sú chaos - sú kontrolovaná nekonečnosť.  
+> Jednoduchosť nie je slabosť - je to elegancia."
+
+Vďaka tejto kombinácii môžeš vytvoriť:
+- **500 koncoviek** bez 50,000 stavov
+- **2,500 hodín obsahu** z 50 hodín tvorby
+- **Nekonečnú znovuhrateľnosť** z jednoduchých pravidiel
+
+---
+
+## 📞 Kontakt
+
+- **GitHub:** [github.com/tvoj-username/rodokmn-osudu](https://github.com/tvoj-username/rodokmn-osudu)
+- **Issues:** [github.com/tvoj-username/rodokmn-osudu/issues](https://github.com/tvoj-username/rodokmn-osudu/issues)
+- **Diskusie:** [github.com/tvoj-username/rodokmn-osudu/discussions](https://github.com/tvoj-username/rodokmn-osudu/discussions)
+
+---
+
+**Rodokmeň Osudu** - Kde každé rozhodnutie je novým príbehom, niet cesty späť medzi lokáciami, ale v každej môžeš zostať pokým ťa život nedoháňa. 🌳⏩🔁
+
+*"Your choices shape your destiny. There is no going back."*
