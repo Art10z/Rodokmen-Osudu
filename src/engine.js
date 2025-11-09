@@ -11,8 +11,28 @@ let stavHry = {};
 let prebiehaPrechod = false;
 
 // --- NOVÝ SYSTÉM PRE SPRAVU MÉDIÍ ---
-let mediaCache = {}; // Ukladá načítané médiá ako Blob URL pre okamžitý prístup
-let prebiehajucePreklady = {}; // Sleduje prebiehajúce sťahovania, aby sa nespúšťali duplicitne
+let mediaCache = new Map(); // Ukladá načítané médiá ako Blob URL pre okamžitý prístup
+const MAX_CACHE_SIZE = 50; // Maximálny počet médií v cache (prevencia memory leak)
+
+/**
+ * Vyčistí starú cache pri dosiahnutí limitu.
+ * Uvoľní Blob URL a odstráni najstaršie položky.
+ */
+function vycistiatStaruCache() {
+    if (mediaCache.size <= MAX_CACHE_SIZE) return;
+    
+    const entries = Array.from(mediaCache.entries());
+    const toRemove = entries.slice(0, Math.floor(MAX_CACHE_SIZE * 0.3)); // Odstráň 30% najstarších
+    
+    toRemove.forEach(([url, blobUrl]) => {
+        if (blobUrl && blobUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(blobUrl);
+        }
+        mediaCache.delete(url);
+    });
+    
+    console.log(`🧹 Vyčistených ${toRemove.length} starých médií z cache`);
+}
 
 /**
  * Získa médium z cache alebo ho načíta.
@@ -25,31 +45,33 @@ function ziskatAleboNacitatMedium(url) {
     if (!url || url.startsWith('data:') || url.startsWith('blob:')) {
         return Promise.resolve(url);
     }
-    if (mediaCache[url]) {
-        return Promise.resolve(mediaCache[url]);
+    if (mediaCache.has(url)) {
+        return Promise.resolve(mediaCache.get(url));
     }
-    if (prebiehajucePreklady[url]) {
-        return prebiehajucePreklady[url];
+    if (prebiehajucePreklady.has(url)) {
+        return prebiehajucePreklady.get(url);
     }
 
-    const promise = fetch(url)
+    vycistiatStaruCache(); // Kontrola cache pred pridaním nového média
+
+    const promise = fetch(url, { cache: 'force-cache' })
         .then(response => {
             if (!response.ok) throw new Error(`Chyba pri sťahovaní média: ${url}`);
             return response.blob();
         })
         .then(blob => {
             const objectURL = URL.createObjectURL(blob);
-            mediaCache[url] = objectURL;
-            delete prebiehajucePreklady[url];
+            mediaCache.set(url, objectURL);
+            prebiehajucePreklady.delete(url);
             return objectURL;
         })
         .catch(err => {
             console.warn(`Nepodarilo sa načítať médium: ${url}`, err);
-            delete prebiehajucePreklady[url];
+            prebiehajucePreklady.delete(url);
             return url; // Vráti pôvodnú URL v prípade chyby
         });
 
-    prebiehajucePreklady[url] = promise;
+    prebiehajucePreklady.set(url, promise);
     return promise;
 }
 
@@ -122,16 +144,25 @@ async function preloadNextScenesMedia(currentScene) {
         if (nextSceneData?.media) {
             Object.values(nextSceneData.media).forEach(url => urlsToPreload.add(url));
         }
+        
+        // Preload prechodového videa pre túto voľbu
+        if (currentScene.id && idSceny) {
+            const prechodUrl = `/pribeh/prechod-${currentScene.id}-${idSceny}.mp4`;
+            urlsToPreload.add(prechodUrl);
+        }
     }
     
     // Spustí prednačítanie na pozadí bez čakania
-    urlsToPreload.forEach(url => ziskatAleboNacitatMedium(url));
+    urlsToPreload.forEach(url => ziskatAleboNacitatMedium(url).catch(() => {}));
 }
 
 function ziskatDataSceny(idSceny) {
     for (const subor in pribehovaCache) {
         if (pribehovaCache[subor][idSceny]) {
-            return pribehovaCache[subor][idSceny];
+            const scena = pribehovaCache[subor][idSceny];
+            // Pridaj ID do scény ak ho nemá (pre lepšie logovanie)
+            if (!scena.id) scena.id = idSceny;
+            return scena;
         }
     }
     console.error(`CHYBA: Scéna s ID "${idSceny}" nebola nájdená v žiadnom načítanom súbore!`);
@@ -224,6 +255,7 @@ async function vykreslitScenu(idSceny) {
     await pripravitMediaPreScenu(scena);
     const mediaZCache = await ziskatObjektMediiZCache(scena.media);
     
+    const predoslIdSceny = stavHry.idAktualnejSceny;
     stavHry.idAktualnejSceny = idSceny;
 
     if (scena.typ === 'zadanieMena') {
@@ -235,6 +267,23 @@ async function vykreslitScenu(idSceny) {
 
     if (scena.lokacia) {
         stavHry.hrac.miesto = scena.lokacia;
+    }
+
+    // === POKUS O PRECHODOVÉ VIDEO (ak prichádzame z inej scény) ===
+    if (predoslIdSceny && predoslIdSceny !== 'NAME_ENTRY' && predoslIdSceny !== idSceny) {
+        const prechodUrl = `/pribeh/prechod-${predoslIdSceny}-${idSceny}.mp4`;
+        const prechodBlobUrl = await ziskatAleboNacitatMedium(prechodUrl);
+        
+        if (prechodBlobUrl && prechodBlobUrl.startsWith('blob:')) {
+            console.log(`🔄 Prehrávam prechodové video: prechod-${predoslIdSceny}-${idSceny}.mp4`);
+            
+            // Zobraz prechodové video ako médium (funkcia v ui.js ho musí prehrať jednorazovo)
+            const prechodMedia = { animacia: prechodBlobUrl };
+            ui.zmenitMedia(prechodMedia);
+            
+            // Počkaj na dokončenie prechodového videa (približne 2-3 sekundy)
+            await new Promise(resolve => setTimeout(resolve, 2500));
+        }
     }
 
     ui.zmenitMedia(mediaZCache);
