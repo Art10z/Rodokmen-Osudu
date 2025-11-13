@@ -1,6 +1,6 @@
 /* Súbor: /src/styles/okno-pribeh.css */
 
-.story-panel { position: relative; overflow: hidden; background-color: #000; display: flex; justify-content: center; align-items: center; padding: 0; }
+ .story-panel { position: relative; overflow: hidden; background-color: #000; display: flex; justify-content: center; align-items: center; padding: 0; will-change: transform, opacity; transform: translateZ(0); backface-visibility: hidden; }
 #transition-overlay {
     position: absolute;
     top: 40px;

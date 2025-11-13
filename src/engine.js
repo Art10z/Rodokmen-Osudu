@@ -4,36 +4,18 @@
  * engine.js - Mozog Hry
  * Tento súbor riadi herný stav, spracováva logiku príbehu a rozhodnutí.
  */
-import * as ui from './ui.js';
 
-let pribehovaCache = {};
+import * as ui from './ui.js';
+import { ziskatAleboNacitatMedium, vycistiatStaruCache, ziskatObjektMediiZCache } from './engine/media.js';
+import { ziskatDataSceny, nacitatPribehovySubor } from './engine/story.js';
+import { pociatocnyStavHry, aplikovatEfekty } from './engine/state.js';
+
 let stavHry = {};
 let prebiehaPrechod = false;
 
-// --- NOVÝ SYSTÉM PRE SPRAVU MÉDIÍ ---
-let mediaCache = new Map(); // Ukladá načítané médiá ako Blob URL pre okamžitý prístup
-let prebiehajucePreklady = new Map(); // Sleduje prebiehajúce sťahovania, aby sa nespúšťali duplicitne
-const MAX_CACHE_SIZE = 50; // Maximálny počet médií v cache (prevencia memory leak)
-
-/**
- * Vyčistí starú cache pri dosiahnutí limitu.
- * Uvoľní Blob URL a odstráni najstaršie položky.
- */
-function vycistiatStaruCache() {
-    if (mediaCache.size <= MAX_CACHE_SIZE) return;
     
-    const entries = Array.from(mediaCache.entries());
-    const toRemove = entries.slice(0, Math.floor(MAX_CACHE_SIZE * 0.3)); // Odstráň 30% najstarších
-    
-    toRemove.forEach(([url, blobUrl]) => {
-        if (blobUrl && blobUrl.startsWith('blob:')) {
-            URL.revokeObjectURL(blobUrl);
-        }
-        mediaCache.delete(url);
-    });
-    
-    console.log(`🧹 Vyčistených ${toRemove.length} starých médií z cache`);
-}
+// ...existing code...
+// ...existing code...
 
 /**
  * Získa médium z cache alebo ho načíta.
@@ -42,39 +24,10 @@ function vycistiatStaruCache() {
  * @param {string} url - URL média na načítanie.
  * @returns {Promise<string>} Promise, ktorý vráti URL (ideálne Blob URL).
  */
-function ziskatAleboNacitatMedium(url) {
-    if (!url || url.startsWith('data:') || url.startsWith('blob:')) {
-        return Promise.resolve(url);
-    }
-    if (mediaCache.has(url)) {
-        return Promise.resolve(mediaCache.get(url));
-    }
-    if (prebiehajucePreklady.has(url)) {
-        return prebiehajucePreklady.get(url);
-    }
-
-    vycistiatStaruCache(); // Kontrola cache pred pridaním nového média
-
-    const promise = fetch(url, { cache: 'force-cache' })
-        .then(response => {
-            if (!response.ok) throw new Error(`Chyba pri sťahovaní média: ${url}`);
-            return response.blob();
-        })
-        .then(blob => {
-            const objectURL = URL.createObjectURL(blob);
-            mediaCache.set(url, objectURL);
-            prebiehajucePreklady.delete(url);
-            return objectURL;
-        })
-        .catch(err => {
-            console.warn(`Nepodarilo sa načítať médium: ${url}`, err);
-            prebiehajucePreklady.delete(url);
-            return url; // Vráti pôvodnú URL v prípade chyby
-        });
-
-    prebiehajucePreklady.set(url, promise);
-    return promise;
-}
+// ...existing code...
+// ...existing code...
+// ...existing code...
+// Odstránené: vycistiatStaruCache a ziskatAleboNacitatMedium (používaj importované z media.js)
 
 /**
  * Pripraví všetky médiá pre danú scénu (načíta ich do cache).
@@ -102,14 +55,7 @@ async function pripravitMediaPreScenu(scena) {
  * @param {object} mediaObj - Pôvodný objekt s URL adresami.
  * @returns {Promise<object|null>} Nový objekt s Blob URL alebo null.
  */
-async function ziskatObjektMediiZCache(mediaObj) {
-    if (!mediaObj) return null;
-    const cachedMedia = {};
-    for (const key in mediaObj) {
-        cachedMedia[key] = await ziskatAleboNacitatMedium(mediaObj[key]);
-    }
-    return cachedMedia;
-}
+// Presunuté do media.js
 // --- KONIEC NOVÉHO SYSTÉMU PRE MÉDIÁ ---
 
 function parsovatOdkazNaScenu(odkaz) {
@@ -157,35 +103,9 @@ async function preloadNextScenesMedia(currentScene) {
     urlsToPreload.forEach(url => ziskatAleboNacitatMedium(url).catch(() => {}));
 }
 
-function ziskatDataSceny(idSceny) {
-    for (const subor in pribehovaCache) {
-        if (pribehovaCache[subor][idSceny]) {
-            const scena = pribehovaCache[subor][idSceny];
-            // Pridaj ID do scény ak ho nemá (pre lepšie logovanie)
-            if (!scena.id) scena.id = idSceny;
-            return scena;
-        }
-    }
-    console.error(`CHYBA: Scéna s ID "${idSceny}" nebola nájdená v žiadnom načítanom súbore!`);
-    return null;
-}
+// Presunuté do story.js
 
-async function nacitatPribehovySubor(nazovSuboru) {
-    if (pribehovaCache[nazovSuboru]) {
-        return;
-    }
-    try {
-        const odpoved = await fetch(`/pribeh/${nazovSuboru}`);
-        if (!odpoved.ok) throw new Error(`HTTP chyba! Status: ${odpoved.status} pre súbor ${nazovSuboru}`);
-        const data = await odpoved.json();
-        pribehovaCache[nazovSuboru] = data;
-        console.log(`Príbehový súbor "${nazovSuboru}" bol úspešne načítaný.`);
-    } catch (chyba) {
-        console.error(`Kritická chyba: Nepodarilo sa načítať súbor "${nazovSuboru}"`, chyba);
-        ui.zobrazitFatalnuChybu(chyba);
-        throw chyba;
-    }
-}
+// Presunuté do story.js
 
 async function spracovatPrechod(odkazNaScenu) {
     const { nazovSuboru, idSceny } = parsovatOdkazNaScenu(odkazNaScenu);
@@ -195,33 +115,9 @@ async function spracovatPrechod(odkazNaScenu) {
     vykreslitScenu(idSceny);
 }
 
-const pociatocnyStavHry = {
-    hrac: { meno: "Hráč", miesto: "Neznámo" },
-    cas: new Date('2042-10-01T08:00:00'),
-    statistiky: { energia: 90, nasytenie: 30, dopamin: 25, motivacia: 20, zdravie: 30 },
-    inventar: [],
-    idAktualnejSceny: 'NAME_ENTRY',
-};
+// Presunuté do state.js
 
-function aplikovatEfekty(efekty) {
-    if (!efekty) return;
-    if (efekty.statistiky) {
-        for (const stat in efekty.statistiky) {
-            if (stavHry.statistiky.hasOwnProperty(stat)) {
-                const zmena = efekty.statistiky[stat];
-                stavHry.statistiky[stat] = Math.max(0, Math.min(100, stavHry.statistiky[stat] + zmena));
-            }
-        }
-    }
-    if (efekty.inventar) {
-        if (efekty.inventar.add && !stavHry.inventar.includes(efekty.inventar.add)) {
-            stavHry.inventar.push(efekty.inventar.add);
-        }
-        if (efekty.inventar.remove) {
-            stavHry.inventar = stavHry.inventar.filter(item => item !== efekty.inventar.remove);
-        }
-    }
-}
+// Presunuté do state.js
 
 function jeVolbaDostupna(volba) {
     // --- ZAČIATOK KĽÚČOVEJ ZMENY ---
@@ -255,6 +151,20 @@ async function vykreslitScenu(idSceny) {
 
     await pripravitMediaPreScenu(scena);
     const mediaZCache = await ziskatObjektMediiZCache(scena.media);
+
+    // --- SKRYTÉ PRELOADOVANIE PRECHODOVÝCH ANIMÁCIÍ ---
+    if (scena.moznosti && Array.isArray(scena.moznosti)) {
+        scena.moznosti.forEach(volba => {
+            if (volba.dalsia_scena) {
+                const { nazovSuboru, idSceny: dalsiaId } = parsovatOdkazNaScenu(volba.dalsia_scena);
+                if (idSceny && dalsiaId) {
+                    const prechodUrl = `/pribeh/prechod-${idSceny}-${dalsiaId}.mp4`;
+                    // Preload do cache, bez zobrazenia
+                    ziskatAleboNacitatMedium(prechodUrl).catch(() => {});
+                }
+            }
+        });
+    }
     
     const predoslIdSceny = stavHry.idAktualnejSceny;
     stavHry.idAktualnejSceny = idSceny;
@@ -330,7 +240,7 @@ async function vybratVolbu(volba) {
     prebiehaPrechod = true;
     ui.vymazatVolby();
     const staryStav = JSON.parse(JSON.stringify(stavHry));
-    aplikovatEfekty(volba.efekty);
+    aplikovatEfekty(stavHry, volba.efekty);
     ui.aktualizovatPanelInventara(stavHry);
     const casNaPosun = volba.posun_casu || 0;
     

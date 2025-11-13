@@ -10,6 +10,9 @@
     position: relative;
     opacity: 0;
     transition: opacity 0.8s ease-out;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 .status-panel.active { opacity: 1; }
 .status-panel.inactive { pointer-events: none; }
